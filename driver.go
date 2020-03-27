@@ -50,6 +50,9 @@ func init() {
 // "s3://bucket/and/so/forth". In the AWS UI, this defaults to
 // "s3://aws-athena-query-results-<ACCOUNTID>-<REGION>", but the driver requires it.
 //
+// - `workgroup` (optional)
+// The Athena workgroup used to submit the query. If unset, the default value used in Athena is 'primary'.
+//
 // - `poll_frequency` (optional)
 // Athena's API requires polling to retrieve query results. This is the frequency at
 // which the driver will poll for results. It should be a time/Duration.String().
@@ -80,6 +83,7 @@ func (d *Driver) Open(connStr string) (driver.Conn, error) {
 		db:             cfg.Database,
 		OutputLocation: cfg.OutputLocation,
 		pollFrequency:  cfg.PollFrequency,
+		workgroup:      cfg.WorkGroup,
 	}, nil
 }
 
@@ -115,6 +119,7 @@ type Config struct {
 	Session        *session.Session
 	Database       string
 	OutputLocation string
+	WorkGroup      string
 
 	PollFrequency time.Duration
 }
@@ -138,6 +143,7 @@ func configFromConnectionString(connStr string) (*Config, error) {
 
 	cfg.Database = args.Get("db")
 	cfg.OutputLocation = args.Get("output_location")
+	cfg.WorkGroup = args.Get("workgroup")
 
 	frequencyStr := args.Get("poll_frequency")
 	if frequencyStr != "" {
