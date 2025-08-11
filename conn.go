@@ -58,15 +58,15 @@ func (c *conn) runQuery(ctx context.Context, query string) (driver.Rows, error) 
 
 // startQuery starts an Athena query and returns its ID.
 func (c *conn) startQuery(ctx context.Context, query string) (string, error) {
-	encryptionType := athena.EncryptionOptionSseS3
+	encryptionType := types.EncryptionOptionSseS3
 	resp, err := c.athena.StartQueryExecution(ctx, &athena.StartQueryExecutionInput{
 		QueryString: aws.String(query),
 		QueryExecutionContext: &types.QueryExecutionContext{
 			Database: aws.String(c.db),
 		},
 		ResultConfiguration: &types.ResultConfiguration{
-			EncryptionConfiguration: &athena.EncryptionConfiguration{
-				EncryptionOption: &encryptionType,
+			EncryptionConfiguration: &types.EncryptionConfiguration{
+				EncryptionOption: encryptionType,
 			},
 			OutputLocation: aws.String(c.OutputLocation),
 		},
